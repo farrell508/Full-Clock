@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>모던 블랙앤화이트 시계 (드래그 가능)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #000000;
+            font-family: 'Inter', sans-serif;
+            overflow: auto;
+        }
+
+        #clockContainer {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        #digitalClock {
+            font-size: 56px;
+            font-weight: 300;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            padding: 20px 40px;
+            border-radius: 2px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            letter-spacing: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #analogClock {
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            position: relative;
+            backdrop-filter: blur(20px);
+            margin: 0 auto;
+        }
+
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #ffffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            transform: translateX(-50%);
+            background: #ffffff;
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #hourHand {
+            width: 3px;
+            height: 70px;
+            border-radius: 2px;
+        }
+
+        #minuteHand {
+            width: 2px;
+            height: 95px;
+            border-radius: 1px;
+        }
+
+        #secondHand {
+            width: 1px;
+            height: 110px;
+            background: #ffffff;
+            opacity: 0.8;
+            transition: transform 0.05s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tick {
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            transform-origin: center 130px;
+            transform: translateX(-50%);
+        }
+
+        .tick::before {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tick.major::before {
+            width: 2px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        #clockContainer:hover {
+            transform: scale(1.01);
+        }
+
+        #clockContainer:hover #digitalClock {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #clockContainer:hover #analogClock {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #clockContainer:active {
+            transform: scale(0.99);
+        }
+
+        #fullscreenBtn {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+            /* 처음엔 보이게 */
+            display: block;
+        }
+
+        #fullscreenBtn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(-50%) translateY(-2px);
+        }
+
+        #fullscreenBtn:active {
+            transform: translateX(-50%) translateY(0px);
+        }
+    </style>
+</head>
+<body>
+    <div id="clockContainer">
+        <div id="digitalClock"></div>
+        <div id="analogClock">
+            <div class="center-dot"></div>
+            <div id="hourHand" class="hand"></div>
+            <div id="minuteHand" class="hand"></div>
+            <div id="secondHand" class="hand"></div>
+        </div>
+    </div>
+
+    <button id="fullscreenBtn">전체 화면으로 보기</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(err => {
+                            console.log('전체화면 모드를 지원하지 않는 브라우저입니다.', err);
+                        });
+                    } else if (document.documentElement.webkitRequestFullscreen) {
+                        document.documentElement.webkitRequestFullscreen();
+                    } else if (document.documentElement.msRequestFullscreen) {
+                        document.documentElement.msRequestFullscreen();
+                    } else {
+                        console.log('이 브라우저는 전체화면을 지원하지 않습니다.');
+                    }
+                }
+            });
+
+            function handleFullscreenChange() {
+                const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+                fullscreenBtn.style.display = isFullscreen ? 'none' : 'block';
+            }
+
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+            // 초기 상태 반영
+            handleFullscreenChange();
+        });
+
+        function updateClocks() {
+            const now = new Date();
+            
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('digitalClock').textContent = timeString;
+            
+            const hourDeg = (now.getHours() % 12 + now.getMinutes() / 60 + now.getSeconds() / 3600) * 30;
+            const minuteDeg = (now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000) * 6;
+            const secondDeg = (now.getSeconds() + now.getMilliseconds() / 1000) * 6;
+            
+            document.getElementById('hourHand').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
+            document.getElementById('minuteHand').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
+            document.getElementById('secondHand').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+        }
+
+        setInterval(updateClocks, 50);
+        updateClocks();
+
+        const analogClock = document.getElementById('analogClock');
+
+        for (let i = 1; i <= 12; i++) {
+            const tick = document.createElement('div');
+            tick.className = 'tick major';
+            tick.style.transform = `translateX(-50%) rotate(${i * 30}deg)`;
+            analogClock.appendChild(tick);
+        }
+
+        for (let i = 1; i <= 60; i++) {
+            if (i % 5 !== 0) {
+                const tick = document.createElement('div');
+                tick.className = 'tick';
+                tick.style.transform = `translateX(-50%) rotate(${i * 6}deg)`;
+                analogClock.appendChild(tick);
+            }
+        }
+
+        const clockContainer = document.getElementById('clockContainer');
+        let isDragging = false;
+        let startX, startY, startLeft, startTop;
+
+        clockContainer.style.left = '50%';
+        clockContainer.style.top = '50%';
+        clockContainer.style.transform = 'translate(-50%, -50%)';
+
+        clockContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+
+            const rect = clockContainer.getBoundingClientRect();
+            startLeft = rect.left;
+            startTop = rect.top;
+
+            clockContainer.style.cursor = 'grabbing';
+            clockContainer.style.transform = 'none';
+            clockContainer.style.left = `${startLeft}px`;
+            clockContainer.style.top = `${startTop}px`;
+
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+
+                clockContainer.style.left = `${startLeft + deltaX}px`;
+                clockContainer.style.top = `${startTop + deltaY}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                clockContainer.style.cursor = 'move';
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            if (isDragging) {
+                isDragging = false;
+                clockContainer.style.cursor = 'move';
+            }
+        });
+    </script>
+</body>
+</html>
