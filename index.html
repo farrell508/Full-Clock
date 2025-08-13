@@ -7,6 +7,26 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            --tick-color: rgba(255, 255, 255, 0.3);
+            --tick-major: rgba(255, 255, 255, 0.6);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --glass-bg: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --glass-hover: rgba(0, 0, 0, 0.08);
+            --tick-color: rgba(0, 0, 0, 0.3);
+            --tick-major: rgba(0, 0, 0, 0.6);
+        }
+        
         body {
             display: flex;
             flex-direction: column;
@@ -14,9 +34,10 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: #000000;
+            background: var(--bg-color);
             font-family: 'Inter', sans-serif;
             overflow: auto;
+            transition: background 0.3s ease;
         }
 
         #clockContainer {
@@ -29,27 +50,29 @@
         #digitalClock {
             font-size: 56px;
             font-weight: 300;
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
+            background: var(--glass-bg);
+            color: var(--text-color);
             padding: 20px 40px;
             border-radius: 2px;
             margin-bottom: 40px;
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
             text-align: center;
             letter-spacing: 4px;
             font-variant-numeric: tabular-nums;
+            transition: all 0.3s ease;
         }
 
         #analogClock {
             width: 300px;
             height: 300px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             border-radius: 50%;
             position: relative;
             backdrop-filter: blur(20px);
             margin: 0 auto;
+            transition: all 0.3s ease;
         }
 
         .center-dot {
@@ -58,10 +81,11 @@
             left: 50%;
             width: 8px;
             height: 8px;
-            background: #ffffff;
+            background: var(--text-color);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             z-index: 10;
+            transition: background 0.3s ease;
         }
 
         .hand {
@@ -70,8 +94,8 @@
             left: 50%;
             transform-origin: bottom;
             transform: translateX(-50%);
-            background: #ffffff;
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--text-color);
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
         }
 
         #hourHand {
@@ -89,9 +113,9 @@
         #secondHand {
             width: 1px;
             height: 110px;
-            background: #ffffff;
+            background: var(--text-color);
             opacity: 0.8;
-            transition: transform 0.05s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.05s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
         }
 
         .tick {
@@ -107,13 +131,14 @@
             display: block;
             width: 1px;
             height: 15px;
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--tick-color);
+            transition: background 0.3s ease;
         }
 
         .tick.major::before {
             width: 2px;
             height: 25px;
-            background: rgba(255, 255, 255, 0.6);
+            background: var(--tick-major);
         }
 
         #clockContainer:hover {
@@ -121,13 +146,13 @@
         }
 
         #clockContainer:hover #digitalClock {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: var(--glass-hover);
+            border-color: var(--glass-border);
         }
 
         #clockContainer:hover #analogClock {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: var(--glass-hover);
+            border-color: var(--glass-border);
         }
 
         #clockContainer:active {
@@ -140,33 +165,160 @@
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            border: 1px solid var(--glass-border);
             border-radius: 6px;
             font-family: 'Inter', sans-serif;
             font-size: 14px;
             font-weight: 400;
             cursor: pointer;
             backdrop-filter: blur(20px);
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             z-index: 1000;
-            /* 처음엔 보이게 */
             display: block;
         }
 
         #fullscreenBtn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.4);
+            background: var(--glass-hover);
+            border-color: var(--glass-border);
             transform: translateX(-50%) translateY(-2px);
         }
 
         #fullscreenBtn:active {
             transform: translateX(-50%) translateY(0px);
         }
+
+        /* 테마 스위치 */
+        #themeSwitch {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 80px;
+            height: 40px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        #themeSwitch:hover {
+            background: var(--glass-hover);
+            transform: scale(1.02);
+        }
+
+        /* 테마 스위치 */
+        #themeSwitch {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 56px;
+            height: 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #themeSwitch:hover {
+            background: var(--glass-hover);
+            transform: scale(1.05);
+        }
+
+        .theme-slider {
+            position: absolute;
+            top: 2px;
+            width: 26px;
+            height: 26px;
+            background: var(--text-color);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--bg-color);
+            left: 2px;
+        }
+
+        /* 달 아이콘은 흑백, 해 아이콘은 노란색 */
+        .theme-slider:has-moon {
+            filter: grayscale(100%);
+        }
+
+        [data-theme="light"] .theme-slider {
+            left: 43px;
+        }
+
+        [data-theme="dark"] .theme-slider {
+            left: 2px;
+        }
+
+        /* 스위치 내부 아이콘만 표시 */
+        .theme-icon {
+            display: none;
+        }
+
+        /* 전체화면 시에만 스위치 숨기기 */
+        body:fullscreen #themeSwitch,
+        body:-webkit-full-screen #themeSwitch,
+        body:-moz-full-screen #themeSwitch,
+        body:-ms-fullscreen #themeSwitch {
+            display: none;
+        }
+
+        [data-theme="dark"] .sun-icon {
+            opacity: 0.4;
+            transform: scale(0.8);
+        }
+
+        [data-theme="dark"] .moon-icon {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        [data-theme="light"] .sun-icon {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        [data-theme="light"] .moon-icon {
+            opacity: 0.4;
+            transform: scale(0.8);
+        }
+
+        /* 애니메이션 효과 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-2px); }
+        }
+
+        #themeSwitch:hover .theme-slider {
+            animation: float 2s ease-in-out infinite;
+        }
     </style>
 </head>
-<body>
+<body data-theme="dark">
+    <div id="themeSwitch">
+        <div class="theme-slider">🌙</div>
+    </div>
+
     <div id="clockContainer">
         <div id="digitalClock"></div>
         <div id="analogClock">
@@ -180,6 +332,47 @@
     <button id="fullscreenBtn">전체 화면으로 보기</button>
 
     <script>
+        // 테마 관리
+        const themeSwitch = document.getElementById('themeSwitch');
+        const body = document.body;
+        const slider = document.querySelector('.theme-slider');
+        
+        let currentTheme = 'dark';
+
+        themeSwitch.addEventListener('click', () => {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', currentTheme);
+            
+            // 슬라이더 아이콘 변경 및 색상 필터 적용
+            if (currentTheme === 'dark') {
+                slider.textContent = '🌙';
+                slider.style.filter = 'grayscale(100%)';
+            } else {
+                slider.textContent = '☀️';
+                slider.style.filter = 'none'; // 해 아이콘은 원래 색상 유지 (노란색)
+            }
+            
+            // 세션에서만 유지
+            sessionStorage.setItem('theme', currentTheme);
+        });
+
+        // 페이지 로드 시 세션에서 테마 복원
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = sessionStorage.getItem('theme') || 'dark';
+            currentTheme = savedTheme;
+            body.setAttribute('data-theme', currentTheme);
+            
+            // 초기 아이콘 및 색상 필터 설정
+            if (currentTheme === 'dark') {
+                slider.textContent = '🌙';
+                slider.style.filter = 'grayscale(100%)';
+            } else {
+                slider.textContent = '☀️';
+                slider.style.filter = 'none'; // 해 아이콘은 원래 색상 유지 (노란색)
+            }
+        });
+
+        // 전체화면 관리
         document.addEventListener('DOMContentLoaded', () => {
             const fullscreenBtn = document.getElementById('fullscreenBtn');
 
@@ -202,13 +395,13 @@
             function handleFullscreenChange() {
                 const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
                 fullscreenBtn.style.display = isFullscreen ? 'none' : 'block';
+                themeSwitch.style.display = isFullscreen ? 'none' : 'flex';
             }
 
             document.addEventListener('fullscreenchange', handleFullscreenChange);
             document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
             document.addEventListener('msfullscreenchange', handleFullscreenChange);
 
-            // 초기 상태 반영
             handleFullscreenChange();
         });
 
@@ -233,6 +426,7 @@
         setInterval(updateClocks, 50);
         updateClocks();
 
+        // 시계 눈금 생성
         const analogClock = document.getElementById('analogClock');
 
         for (let i = 1; i <= 12; i++) {
@@ -251,6 +445,7 @@
             }
         }
 
+        // 드래그 기능
         const clockContainer = document.getElementById('clockContainer');
         let isDragging = false;
         let startX, startY, startLeft, startTop;
