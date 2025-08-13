@@ -38,15 +38,15 @@
             font-family: 'Inter', sans-serif;
             overflow: auto;
             transition: background 0.3s ease;
-            touch-action: none; /* 모바일에서 스크롤 등 기본 터치 동작 방지 */
+            touch-action: manipulation;
         }
 
         #clockContainer {
             position: absolute;
             cursor: move;
             user-select: none;
-            transition: all 0.2s ease;
-            touch-action: none; /* 터치 시 기본 동작 방지 */
+            will-change: transform, left, top;
+            transition: transform 0.15s ease-out;
         }
 
         #digitalClock {
@@ -65,7 +65,6 @@
             transition: all 0.3s ease;
         }
 
-        /* 모바일 화면에서 디지털 시계 크기 조정 */
         @media (max-width: 768px) {
             #digitalClock {
                 font-size: 36px;
@@ -78,17 +77,14 @@
                 height: 250px !important;
             }
             
-            #hourHand {
-                height: 60px !important;
+            .tick {
+                top: 8px !important;
+                transform-origin: center 117px !important;
             }
             
-            #minuteHand {
-                height: 80px !important;
-            }
-            
-            #secondHand {
-                height: 95px !important;
-            }
+            #hourHand { height: 60px !important; }
+            #minuteHand { height: 80px !important; }
+            #secondHand { height: 95px !important; }
         }
 
         #analogClock {
@@ -123,19 +119,21 @@
             transform-origin: bottom;
             transform: translateX(-50%);
             background: var(--text-color);
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+            will-change: transform;
         }
 
         #hourHand {
             width: 3px;
             height: 70px;
             border-radius: 2px;
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
         }
 
         #minuteHand {
             width: 2px;
             height: 95px;
             border-radius: 1px;
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
         }
 
         #secondHand {
@@ -149,8 +147,8 @@
         .tick {
             position: absolute;
             left: 50%;
-            top: 20px;
-            transform-origin: center 130px;
+            top: 10px;
+            transform-origin: center 140px;
             transform: translateX(-50%);
         }
 
@@ -173,11 +171,7 @@
             transform: scale(1.01);
         }
 
-        #clockContainer:hover #digitalClock {
-            background: var(--glass-hover);
-            border-color: var(--glass-border);
-        }
-
+        #clockContainer:hover #digitalClock,
         #clockContainer:hover #analogClock {
             background: var(--glass-hover);
             border-color: var(--glass-border);
@@ -187,29 +181,35 @@
             transform: scale(0.99);
         }
 
+        .btn {
+            background: var(--glass-bg);
+            color: var(--text-color);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .btn:hover {
+            background: var(--glass-hover);
+            border-color: var(--glass-border);
+        }
+
         #fullscreenBtn {
             position: fixed;
             bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 24px;
-            background: var(--glass-bg);
-            color: var(--text-color);
-            border: 1px solid var(--glass-border);
             border-radius: 6px;
             font-family: 'Inter', sans-serif;
             font-size: 14px;
             font-weight: 400;
-            cursor: pointer;
-            backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
             display: block;
         }
 
         #fullscreenBtn:hover {
-            background: var(--glass-hover);
-            border-color: var(--glass-border);
             transform: translateX(-50%) translateY(-2px);
         }
 
@@ -217,25 +217,17 @@
             transform: translateX(-50%) translateY(0px);
         }
 
-        /* 테마 스위치 */
         #themeSwitch {
             position: fixed;
             top: 30px;
             right: 30px;
             width: 56px;
             height: 30px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
             border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(20px);
-            z-index: 1000;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         #themeSwitch:hover {
-            background: var(--glass-hover);
             transform: scale(1.05);
         }
 
@@ -258,38 +250,23 @@
             left: 2px;
         }
 
-        [data-theme="light"] .theme-slider {
-            left: 28px;
-        }
+        [data-theme="light"] .theme-slider { left: 28px; }
+        [data-theme="dark"] .theme-slider { left: 2px; }
 
-        [data-theme="dark"] .theme-slider {
-            left: 2px;
-        }
-
-        /* 전체화면 나가기 버튼 */
         #exitFullscreenBtn {
             position: fixed;
             top: 30px;
             left: 30px;
             width: 44px;
             height: 44px;
-            background: var(--glass-bg);
-            color: var(--text-color);
-            border: 1px solid var(--glass-border);
             border-radius: 50%;
             font-size: 20px;
-            cursor: pointer;
-            backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
             display: none;
             align-items: center;
             justify-content: center;
         }
 
         #exitFullscreenBtn:hover {
-            background: var(--glass-hover);
-            border-color: var(--glass-border);
             transform: scale(1.1);
         }
 
@@ -297,7 +274,7 @@
             transform: scale(0.95);
         }
 
-        /* 전체화면 시에만 나가기 버튼 표시하고 다른 버튼들 숨기기 */
+        /* 전체화면 모드 */
         body:fullscreen #themeSwitch,
         body:-webkit-full-screen #themeSwitch,
         body:-moz-full-screen #themeSwitch,
@@ -312,7 +289,17 @@
             display: flex;
         }
 
-        /* 애니메이션 효과 */
+        /* 드래그 최적화 */
+        .dragging {
+            transform: scale(1.02) !important;
+            opacity: 0.95;
+            transition: none !important;
+        }
+
+        .dragging * {
+            pointer-events: none;
+        }
+
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-2px); }
@@ -321,20 +308,14 @@
         #themeSwitch:hover .theme-slider {
             animation: float 2s ease-in-out infinite;
         }
-
-        /* 드래그 중일 때 시각적 피드백 */
-        .dragging {
-            transform: scale(1.02) !important;
-            opacity: 0.9;
-        }
     </style>
 </head>
 <body data-theme="dark">
-    <div id="themeSwitch">
+    <div id="themeSwitch" class="btn">
         <div class="theme-slider">🌙</div>
     </div>
 
-    <button id="exitFullscreenBtn" title="전체화면 나가기">✕</button>
+    <button id="exitFullscreenBtn" class="btn" title="전체화면 나가기">✕</button>
 
     <div id="clockContainer">
         <div id="digitalClock"></div>
@@ -346,204 +327,242 @@
         </div>
     </div>
 
-    <button id="fullscreenBtn">전체 화면으로 보기</button>
+    <button id="fullscreenBtn" class="btn">전체 화면으로 보기</button>
 
     <script>
-        // 테마 관리
-        const themeSwitch = document.getElementById('themeSwitch');
-        const body = document.body;
-        const slider = document.querySelector('.theme-slider');
-        
-        let currentTheme = 'dark';
+        // 전역 변수
+        const elements = {
+            themeSwitch: document.getElementById('themeSwitch'),
+            slider: document.querySelector('.theme-slider'),
+            fullscreenBtn: document.getElementById('fullscreenBtn'),
+            exitFullscreenBtn: document.getElementById('exitFullscreenBtn'),
+            clockContainer: document.getElementById('clockContainer'),
+            digitalClock: document.getElementById('digitalClock'),
+            hourHand: document.getElementById('hourHand'),
+            minuteHand: document.getElementById('minuteHand'),
+            secondHand: document.getElementById('secondHand'),
+            analogClock: document.getElementById('analogClock')
+        };
 
-        themeSwitch.addEventListener('click', () => {
+        let currentTheme = 'dark';
+        let dragState = {
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            startLeft: 0,
+            startTop: 0,
+            rafId: null
+        };
+
+        // 테마 관리
+        function toggleTheme() {
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            body.setAttribute('data-theme', currentTheme);
+            document.body.setAttribute('data-theme', currentTheme);
             
             if (currentTheme === 'dark') {
-                slider.textContent = '🌙';
-                slider.style.filter = 'grayscale(100%)';
+                elements.slider.textContent = '🌙';
+                elements.slider.style.filter = 'grayscale(100%)';
             } else {
-                slider.textContent = '☀️';
-                slider.style.filter = 'none';
+                elements.slider.textContent = '☀️';
+                elements.slider.style.filter = 'none';
             }
             
             sessionStorage.setItem('theme', currentTheme);
-        });
+        }
 
-        // 페이지 로드 시 세션에서 테마 복원
-        document.addEventListener('DOMContentLoaded', () => {
+        function initTheme() {
             const savedTheme = sessionStorage.getItem('theme') || 'dark';
             currentTheme = savedTheme;
-            body.setAttribute('data-theme', currentTheme);
+            document.body.setAttribute('data-theme', currentTheme);
             
             if (currentTheme === 'dark') {
-                slider.textContent = '🌙';
-                slider.style.filter = 'grayscale(100%)';
+                elements.slider.textContent = '🌙';
+                elements.slider.style.filter = 'grayscale(100%)';
             } else {
-                slider.textContent = '☀️';
-                slider.style.filter = 'none';
+                elements.slider.textContent = '☀️';
+                elements.slider.style.filter = 'none';
             }
-        });
+        }
 
         // 전체화면 관리
-        document.addEventListener('DOMContentLoaded', () => {
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
-
-            // 전체화면 진입
-            fullscreenBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                    if (document.documentElement.requestFullscreen) {
-                        document.documentElement.requestFullscreen().catch(err => {
-                            console.log('전체화면 모드를 지원하지 않는 브라우저입니다.', err);
-                        });
-                    } else if (document.documentElement.webkitRequestFullscreen) {
-                        document.documentElement.webkitRequestFullscreen();
-                    } else if (document.documentElement.msRequestFullscreen) {
-                        document.documentElement.msRequestFullscreen();
-                    } else {
-                        console.log('이 브라우저는 전체화면을 지원하지 않습니다.');
-                    }
-                }
-            });
-
-            // 전체화면 나가기
-            exitFullscreenBtn.addEventListener('click', () => {
-                if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    }
-                }
-            });
-
-            function handleFullscreenChange() {
-                const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-                fullscreenBtn.style.display = isFullscreen ? 'none' : 'block';
-                exitFullscreenBtn.style.display = isFullscreen ? 'flex' : 'none';
-                themeSwitch.style.display = isFullscreen ? 'none' : 'flex';
+        function enterFullscreen() {
+            const docEl = document.documentElement;
+            if (docEl.requestFullscreen) {
+                docEl.requestFullscreen().catch(console.error);
+            } else if (docEl.webkitRequestFullscreen) {
+                docEl.webkitRequestFullscreen();
+            } else if (docEl.msRequestFullscreen) {
+                docEl.msRequestFullscreen();
             }
+        }
 
-            document.addEventListener('fullscreenchange', handleFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-            document.addEventListener('msfullscreenchange', handleFullscreenChange);
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
 
-            handleFullscreenChange();
-        });
+        function handleFullscreenChange() {
+            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+            elements.fullscreenBtn.style.display = isFullscreen ? 'none' : 'block';
+            elements.exitFullscreenBtn.style.display = isFullscreen ? 'flex' : 'none';
+            elements.themeSwitch.style.display = isFullscreen ? 'none' : 'flex';
+        }
 
+        // 시계 업데이트 (최적화된 버전)
         function updateClocks() {
             const now = new Date();
+            const ms = now.getMilliseconds();
             
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const timeString = `${hours}:${minutes}:${seconds}`;
-            document.getElementById('digitalClock').textContent = timeString;
+            // 디지털 시계 (초마다만 업데이트)
+            if (ms < 50) {
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                elements.digitalClock.textContent = `${hours}:${minutes}:${seconds}`;
+            }
             
-            const hourDeg = (now.getHours() % 12 + now.getMinutes() / 60 + now.getSeconds() / 3600) * 30;
-            const minuteDeg = (now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000) * 6;
-            const secondDeg = (now.getSeconds() + now.getMilliseconds() / 1000) * 6;
+            // 아날로그 시계
+            const time = now.getTime();
+            const hourDeg = ((now.getHours() % 12) + now.getMinutes() / 60 + now.getSeconds() / 3600) * 30;
+            const minuteDeg = (now.getMinutes() + now.getSeconds() / 60 + ms / 60000) * 6;
+            const secondDeg = (now.getSeconds() + ms / 1000) * 6;
             
-            document.getElementById('hourHand').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
-            document.getElementById('minuteHand').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
-            document.getElementById('secondHand').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+            elements.hourHand.style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
+            elements.minuteHand.style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
+            elements.secondHand.style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
         }
-
-        setInterval(updateClocks, 50);
-        updateClocks();
 
         // 시계 눈금 생성
-        const analogClock = document.getElementById('analogClock');
-
-        for (let i = 1; i <= 12; i++) {
-            const tick = document.createElement('div');
-            tick.className = 'tick major';
-            tick.style.transform = `translateX(-50%) rotate(${i * 30}deg)`;
-            analogClock.appendChild(tick);
-        }
-
-        for (let i = 1; i <= 60; i++) {
-            if (i % 5 !== 0) {
+        function createTicks() {
+            const fragment = document.createDocumentFragment();
+            
+            // 주요 눈금 (12시간)
+            for (let i = 1; i <= 12; i++) {
                 const tick = document.createElement('div');
-                tick.className = 'tick';
-                tick.style.transform = `translateX(-50%) rotate(${i * 6}deg)`;
-                analogClock.appendChild(tick);
+                tick.className = 'tick major';
+                tick.style.transform = `translateX(-50%) rotate(${i * 30}deg)`;
+                fragment.appendChild(tick);
             }
+            
+            // 세부 눈금 (60분)
+            for (let i = 1; i <= 60; i++) {
+                if (i % 5 !== 0) {
+                    const tick = document.createElement('div');
+                    tick.className = 'tick';
+                    tick.style.transform = `translateX(-50%) rotate(${i * 6}deg)`;
+                    fragment.appendChild(tick);
+                }
+            }
+            
+            elements.analogClock.appendChild(fragment);
         }
 
-        // 드래그 기능 (마우스 + 터치 지원)
-        const clockContainer = document.getElementById('clockContainer');
-        let isDragging = false;
-        let startX, startY, startLeft, startTop;
-
-        // 초기 위치 설정
-        clockContainer.style.left = '50%';
-        clockContainer.style.top = '50%';
-        clockContainer.style.transform = 'translate(-50%, -50%)';
-
-        // 터치 이벤트 헬퍼 함수
+        // 드래그 기능 (성능 최적화)
         function getEventCoords(e) {
-            if (e.touches && e.touches.length > 0) {
-                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            }
-            return { x: e.clientX, y: e.clientY };
+            return e.touches && e.touches.length > 0 
+                ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+                : { x: e.clientX, y: e.clientY };
         }
 
-        // 드래그 시작
+        function updatePosition(x, y) {
+            if (dragState.rafId) {
+                cancelAnimationFrame(dragState.rafId);
+            }
+            
+            dragState.rafId = requestAnimationFrame(() => {
+                elements.clockContainer.style.left = `${x}px`;
+                elements.clockContainer.style.top = `${y}px`;
+            });
+        }
+
         function startDrag(e) {
-            isDragging = true;
+            dragState.isDragging = true;
             const coords = getEventCoords(e);
-            startX = coords.x;
-            startY = coords.y;
+            dragState.startX = coords.x;
+            dragState.startY = coords.y;
 
-            const rect = clockContainer.getBoundingClientRect();
-            startLeft = rect.left;
-            startTop = rect.top;
+            const rect = elements.clockContainer.getBoundingClientRect();
+            dragState.startLeft = rect.left;
+            dragState.startTop = rect.top;
 
-            clockContainer.classList.add('dragging');
-            clockContainer.style.transform = 'none';
-            clockContainer.style.left = `${startLeft}px`;
-            clockContainer.style.top = `${startTop}px`;
+            elements.clockContainer.classList.add('dragging');
+            elements.clockContainer.style.transform = 'none';
+            elements.clockContainer.style.left = `${dragState.startLeft}px`;
+            elements.clockContainer.style.top = `${dragState.startTop}px`;
 
             e.preventDefault();
         }
 
-        // 드래그 중
         function duringDrag(e) {
-            if (isDragging) {
-                e.preventDefault();
-                const coords = getEventCoords(e);
-                const deltaX = coords.x - startX;
-                const deltaY = coords.y - startY;
+            if (!dragState.isDragging) return;
+            
+            e.preventDefault();
+            const coords = getEventCoords(e);
+            const deltaX = coords.x - dragState.startX;
+            const deltaY = coords.y - dragState.startY;
 
-                clockContainer.style.left = `${startLeft + deltaX}px`;
-                clockContainer.style.top = `${startTop + deltaY}px`;
-            }
+            updatePosition(dragState.startLeft + deltaX, dragState.startTop + deltaY);
         }
 
-        // 드래그 종료
         function endDrag() {
-            if (isDragging) {
-                isDragging = false;
-                clockContainer.classList.remove('dragging');
+            if (!dragState.isDragging) return;
+            
+            dragState.isDragging = false;
+            elements.clockContainer.classList.remove('dragging');
+            
+            if (dragState.rafId) {
+                cancelAnimationFrame(dragState.rafId);
+                dragState.rafId = null;
             }
         }
 
-        // 마우스 이벤트
-        clockContainer.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', duringDrag);
-        document.addEventListener('mouseup', endDrag);
-        document.addEventListener('mouseleave', endDrag);
+        // 초기화
+        function init() {
+            // 초기 위치 설정
+            elements.clockContainer.style.left = '50%';
+            elements.clockContainer.style.top = '50%';
+            elements.clockContainer.style.transform = 'translate(-50%, -50%)';
 
-        // 터치 이벤트 (모바일)
-        clockContainer.addEventListener('touchstart', startDrag, { passive: false });
-        document.addEventListener('touchmove', duringDrag, { passive: false });
-        document.addEventListener('touchend', endDrag);
-        document.addEventListener('touchcancel', endDrag);
+            // 테마 초기화
+            initTheme();
+
+            // 시계 눈금 생성
+            createTicks();
+
+            // 이벤트 리스너 등록
+            elements.themeSwitch.addEventListener('click', toggleTheme);
+            elements.fullscreenBtn.addEventListener('click', enterFullscreen);
+            elements.exitFullscreenBtn.addEventListener('click', exitFullscreen);
+
+            // 전체화면 변경 이벤트
+            ['fullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange']
+                .forEach(event => document.addEventListener(event, handleFullscreenChange));
+
+            // 드래그 이벤트 (마우스)
+            elements.clockContainer.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', duringDrag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('mouseleave', endDrag);
+
+            // 드래그 이벤트 (터치)
+            elements.clockContainer.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('touchmove', duringDrag, { passive: false });
+            document.addEventListener('touchend', endDrag);
+            document.addEventListener('touchcancel', endDrag);
+
+            // 시계 업데이트 시작
+            setInterval(updateClocks, 50);
+            updateClocks();
+            handleFullscreenChange();
+        }
+
+        // DOM 로드 완료 후 초기화
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
