@@ -266,12 +266,50 @@
             left: 2px;
         }
 
-        /* 전체화면 시에만 스위치 숨기기 */
+        /* 전체화면 나가기 버튼 */
+        #exitFullscreenBtn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            width: 44px;
+            height: 44px;
+            background: var(--glass-bg);
+            color: var(--text-color);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #exitFullscreenBtn:hover {
+            background: var(--glass-hover);
+            border-color: var(--glass-border);
+            transform: scale(1.1);
+        }
+
+        #exitFullscreenBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* 전체화면 시에만 나가기 버튼 표시하고 다른 버튼들 숨기기 */
         body:fullscreen #themeSwitch,
         body:-webkit-full-screen #themeSwitch,
         body:-moz-full-screen #themeSwitch,
         body:-ms-fullscreen #themeSwitch {
             display: none;
+        }
+
+        body:fullscreen #exitFullscreenBtn,
+        body:-webkit-full-screen #exitFullscreenBtn,
+        body:-moz-full-screen #exitFullscreenBtn,
+        body:-ms-fullscreen #exitFullscreenBtn {
+            display: flex;
         }
 
         /* 애니메이션 효과 */
@@ -295,6 +333,8 @@
     <div id="themeSwitch">
         <div class="theme-slider">🌙</div>
     </div>
+
+    <button id="exitFullscreenBtn" title="전체화면 나가기">✕</button>
 
     <div id="clockContainer">
         <div id="digitalClock"></div>
@@ -349,7 +389,9 @@
         // 전체화면 관리
         document.addEventListener('DOMContentLoaded', () => {
             const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
 
+            // 전체화면 진입
             fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
                     if (document.documentElement.requestFullscreen) {
@@ -366,9 +408,23 @@
                 }
             });
 
+            // 전체화면 나가기
+            exitFullscreenBtn.addEventListener('click', () => {
+                if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                }
+            });
+
             function handleFullscreenChange() {
                 const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
                 fullscreenBtn.style.display = isFullscreen ? 'none' : 'block';
+                exitFullscreenBtn.style.display = isFullscreen ? 'flex' : 'none';
                 themeSwitch.style.display = isFullscreen ? 'none' : 'flex';
             }
 
